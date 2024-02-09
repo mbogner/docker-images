@@ -1,4 +1,4 @@
-# temurin-alpine-jre21
+# temurin-alpine-jre
 
 Alpine latest with Eclipse Temurin JRE 21. This image is meant to be used to run JVM based applications. It includes a
 user named `application` with home directory `/home/application` which is set as default.
@@ -13,7 +13,7 @@ COPY ./ ./
 CMD dockerd-entrypoint.sh & \
     ./gradlew build --no-daemon --stacktrace --info
 
-FROM mbopm/temurin-alpine:latest
+FROM mbopm/temurin-alpine-jre:latest
 COPY --from=builder /workdir/app/build/libs/app.jar .
 ```
 
@@ -35,7 +35,7 @@ Here a sample for how to use this image inside a docker compose file to run an a
 ```yaml
 services:
   app:
-    image: mbopm/temurin-alpine:latest
+    image: mbopm/temurin-alpine-jre:latest
     volumes:
       - "./app.jar:/home/application/app.jar:ro"
     healthcheck:
