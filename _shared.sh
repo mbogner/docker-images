@@ -1,33 +1,36 @@
+#!/usr/bin/env bash
+
 function build {
-  local BUILD_DIR=$1
-  local IMAGE_NAME=$2
-  local VERSION=$3
+  local BUILD_NAME=$1
+  local BUILD_DIR=$2
+  local IMAGE_NAME=$3
+  local VERSION=$4
+  local EXTRA_TAG=$5
 
   echo "#############################################################################################################"
-  echo "# build: BUILD_DIR=$BUILD_DIR, IMAGE_NAME=$IMAGE_NAME, VERSION=$VERSION"
+  echo "# build: BUILD_NAME=$BUILD_NAME BUILD_DIR=$BUILD_DIR, IMAGE_NAME=$IMAGE_NAME, VERSION=$VERSION, EXTRA_TAG=$EXTRA_TAG"
   echo "#############################################################################################################"
+  echo "# in case a builder named $BUILD_NAME exists that you're not using anymore, you can remove it with:"
+  echo "#     docker buildx rm $BUILD_NAME"
+  echo "# this can happen if a build failed"
 
-  echo "# create aarch64 image"
-  docker build --platform=linux/aarch64 -t "${IMAGE_NAME}:${VERSION}"-aarch64 "${BUILD_DIR}" || exit 1
-  docker push "${IMAGE_NAME}:${VERSION}-aarch64" || exit 2
+  docker buildx create --name "$BUILD_NAME" --platform linux/amd64,linux/arm64 --driver docker-container || exit 1
 
-  echo "# create amd64 image"
-  docker build --platform=linux/amd64 -t "${IMAGE_NAME}:${VERSION}-amd64" "${BUILD_DIR}" || exit 3
-  docker push "${IMAGE_NAME}:${VERSION}-amd64" || exit 4
+  if [[ "" == "$EXTRA_TAG" ]]; then
+    echo "# no extra tag"
+    docker buildx build --builder "$BUILD_NAME" --platform linux/amd64,linux/arm64 \
+      -t "${IMAGE_NAME}:${VERSION}" --push "${BUILD_DIR}" || exit 2
+  else
+    echo "# extra tag: $EXTRA_TAG"
+    docker buildx build --builder "$BUILD_NAME" --platform linux/amd64,linux/arm64 \
+      -t "${IMAGE_NAME}:${VERSION}" -t "${IMAGE_NAME}:${EXTRA_TAG}" --push "${BUILD_DIR}" || exit 2
+  fi
 
-  echo "# create version image"
-  docker manifest create "${IMAGE_NAME}:${VERSION}" \
-    --amend "${IMAGE_NAME}:${VERSION}-amd64" \
-    --amend "${IMAGE_NAME}:${VERSION}-aarch64" || exit 5
-  docker manifest push "${IMAGE_NAME}:${VERSION}" || exit 6
-
-  echo "# create latest image"
-  docker manifest create "${IMAGE_NAME}:latest" \
-    --amend "${IMAGE_NAME}:${VERSION}-amd64" \
-    --amend "${IMAGE_NAME}:${VERSION}-aarch64" || exit 7
-  docker manifest push "${IMAGE_NAME}:latest" || exit 8
 
   echo "#############################################################################################################"
   echo "# done"
   echo "#############################################################################################################"
+
+  # Clean up builder instance after use
+  docker buildx rm "$BUILD_NAME"
 }

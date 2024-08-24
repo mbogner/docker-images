@@ -1,3 +1,7 @@
 .idea/
 .vscode/
+downloads/
 *.iml
+*.tgz
+*.tar.gz
+*.zip
