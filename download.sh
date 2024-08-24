@@ -1,7 +1,7 @@
 #!/bin/bash
 URL=$1
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-DOWNLOADS_DIR="$SCRIPT_DIR/downloads"
+MY_DIR="$(dirname "$(realpath "$0")")"
+DOWNLOADS_DIR="$MY_DIR/downloads"
 TARGET="$DOWNLOADS_DIR/$2"
 
 if [[ ! -d "$DOWNLOADS_DIR" ]]; then
