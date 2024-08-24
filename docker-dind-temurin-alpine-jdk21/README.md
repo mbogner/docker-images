@@ -15,3 +15,7 @@ CMD dockerd-entrypoint.sh & ./gradlew build --no-daemon --stacktrace --info
 The `dockerd-entrypoint.sh &` in front is important to have docker properly started for the test. In all tests docker
 was much faster than every gradle step that would rely on it. So that possible race condition was no problem in all
 runs.
+
+----------
+- docker hub: https://hub.docker.com/repository/docker/mbopm/docker-dind-temurin-alpine
+- git: https://github.com/mbogner/docker-images

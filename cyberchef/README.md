@@ -2,4 +2,6 @@
 
 Cyberchef instance hosted with nginx.
 
-see https://github.com/mbogner/docker-images/tree/develop/cyberchef
+----------
+ - docker hub: https://hub.docker.com/repository/docker/mbopm/cyberchef
+ - git: https://github.com/mbogner/docker-images

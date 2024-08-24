@@ -49,3 +49,7 @@ services:
 
 The sample assumes you have an app.jar file in the same directory as the docker compose file and that the application
 listens to port 8080 when started.
+
+----------
+- docker hub: https://hub.docker.com/repository/docker/mbopm/temurin-alpine-jre
+- git: https://github.com/mbogner/docker-images
