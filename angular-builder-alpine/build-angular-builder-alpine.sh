@@ -4,4 +4,4 @@ cd "${DIR}" || exit 98
 source ../_shared.sh || exit 99
 
 # see Dockerfile for version
-build "angular-builder-alpine" "$PWD" "mbopm/angular-builder-alpine" "lts-alpine3.17" "latest"
+build "angular-builder-alpine" "$PWD" "mbopm/angular-builder-alpine" "lts-alpine3.20" "latest"
