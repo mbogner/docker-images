@@ -60,5 +60,6 @@ function build {
   echo "#############################################################################################################"
 
   # Clean up builder instance after use
+  echo "cleanup buildx..."
   docker buildx rm "$BUILD_NAME"
 }

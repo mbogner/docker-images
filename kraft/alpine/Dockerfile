@@ -13,7 +13,8 @@ WORKDIR /opt/kafka
 
 RUN apk add --no-cache bash &&\
     adduser -D -h /opt/kafka -s /bin/bash kafka kafka && \
-    chown -R kafka:kafka /opt/kafka* && \
+    mkdir -p /data/kraft-combined-logs && \
+    chown -R kafka:kafka /opt/kafka* /data/kraft-combined-logs && \
     chmod +x /opt/kafka/*.sh
 
 USER kafka

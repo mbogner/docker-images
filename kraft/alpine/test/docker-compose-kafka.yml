@@ -1,0 +1,69 @@
+x-kafka-common: &kafka-common
+  image: mbopm/kraft:latest
+  environment:
+    KAFKA_CLUSTER_ID: "JFMocC0pR8SfVltYoDiDbw"
+  networks:
+    - kafka
+
+services:
+
+  kraft1:
+    <<: *kafka-common
+    container_name: kraft1
+    hostname: kraft1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./server1.properties:/opt/kafka/config/kraft/server.properties:ro
+      - kafka1:/data/kraft-combined-logs:rw
+    healthcheck:
+      test: nc -z kraft1 9192 || exit 1
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 10s
+    ports:
+      - "127.0.0.1:9192:9192"
+
+  kraft2:
+    <<: *kafka-common
+    container_name: kraft2
+    hostname: kraft2
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./server2.properties:/opt/kafka/config/kraft/server.properties:ro
+      - kafka2:/data/kraft-combined-logs:rw
+    healthcheck:
+      test: nc -z kraft2 9193 || exit 1
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 10s
+    ports:
+      - "127.0.0.1:9193:9193"
+
+  kraft3:
+    <<: *kafka-common
+    container_name: kraft3
+    hostname: kraft3
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./server3.properties:/opt/kafka/config/kraft/server.properties:ro
+      - kafka3:/data/kraft-combined-logs:rw
+    healthcheck:
+      test: nc -z kraft3 9194 || exit 1
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 10s
+    ports:
+      - "127.0.0.1:9194:9194"
+
+volumes:
+  kafka1:
+  kafka2:
+  kafka3:
+networks:
+  kafka:
