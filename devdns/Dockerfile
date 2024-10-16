@@ -8,6 +8,7 @@ RUN apk add --no-cache git go && \
     go build -o /usr/local/bin/devdns
 
 FROM alpine:3
+LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
 COPY --from=builder /usr/local/bin/devdns /usr/local/bin/devdns
 RUN apk add --no-cache bind-tools
 ENTRYPOINT ["/usr/local/bin/devdns"]

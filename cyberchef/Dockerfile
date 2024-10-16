@@ -1,6 +1,6 @@
 FROM alpine:3 AS unzipper
 RUN apk add --no-cache unzip
-# https://gchq.github.io/CyberChef/CyberChef_v10.19.2.zip
+# https://gchq.github.io/CyberChef => top left corner
 ARG CYBERCHEF_VERSION=10.19.2
 ADD https://gchq.github.io/CyberChef/CyberChef_v${CYBERCHEF_VERSION}.zip /data/
 RUN mkdir /data/out && unzip /data/CyberChef_v$CYBERCHEF_VERSION.zip -d /data/out/

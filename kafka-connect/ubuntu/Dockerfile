@@ -1,4 +1,5 @@
 FROM ubuntu:24.04
+LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
 
 ADD kafka.tgz /opt/
 RUN ln -s /opt/kafka_* /opt/kafka && \

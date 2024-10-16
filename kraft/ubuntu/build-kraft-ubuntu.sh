@@ -8,5 +8,6 @@ VERSION="ubuntu_$KAFKA_SCALA_VERSION-$KAFKA_VERSION"
 ../../download.sh "https://downloads.apache.org/kafka/$KAFKA_VERSION/kafka_$KAFKA_SCALA_VERSION-$KAFKA_VERSION.tgz" kafka.tgz || exit 97
 
 cp ../../downloads/kafka.tgz . || exit 96
+docker pull ubuntu:24.04
 build "kraft-ubuntu" "$DIR" "mbopm/kraft" "$VERSION" "" || exit 1
 rm -f kafka.tgz

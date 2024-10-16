@@ -4,4 +4,5 @@ cd "${DIR}" || exit 98
 source ../_shared.sh || exit 99
 
 # see Dockerfile for version
+docker pull alpine:3
 build "devdns" "$PWD" "mbopm/devdns" "1.1" "latest"
