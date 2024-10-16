@@ -13,7 +13,8 @@ ENV KAFKA_HOME=/opt/kafka \
     KAFKA_CONNECT_CONFIG=/opt/kafka/config/connect.properties
 WORKDIR /opt/kafka
 RUN useradd --home-dir /opt/kafka -ms /bin/bash kafka && \
-    chown -R kafka:kafka /opt/kafka* && \
+    mkdir -p /data/kraft-combined-logs && \
+    chown -R kafka:kafka /opt/kafka* /data/kraft-combined-logs && \
     chmod +x /opt/kafka/*.sh
 
 CMD ["/opt/kafka/start.sh"]
