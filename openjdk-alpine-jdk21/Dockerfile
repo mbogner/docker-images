@@ -4,6 +4,8 @@ RUN apk add --no-cache \
         bash \
         openjdk21-jdk \
         openssh \
+        libc6-compat \
+        procps \
         && \
     adduser -D -h /home/application -s /bin/bash application application
 USER application
