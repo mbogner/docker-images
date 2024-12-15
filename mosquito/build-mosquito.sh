@@ -4,5 +4,5 @@ cd "${DIR}" || exit 98
 source ../_shared.sh || exit 99
 
 # see Dockerfile for version
-docker pull mbopm/openjdk-alpine-jre:jre17
-build "nexus-alpine" "$PWD" "mbopm/nexus-alpine" "3.74.0-05" "latest"
+docker pull eclipse-mosquitto:2
+build "mosquito" "$PWD" "mbopm/mosquito" "2" "latest"
