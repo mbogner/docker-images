@@ -11,6 +11,8 @@ You can override those on container startup by setting the shown environment var
 
 Next to the standard port 1883 it also exposes a websocket port on 8080.
 
+You can easily test with MQTT Explorer.
+
 ## docker compose
 
 ```yaml
