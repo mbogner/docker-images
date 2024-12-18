@@ -9,6 +9,8 @@ Default credentials:
 
 You can override those on container startup by setting the shown environment variables.
 
+Next to the standard port 1883 it also exposes a websocket port on 8080.
+
 ## docker compose
 
 ```yaml
@@ -17,6 +19,7 @@ services:
     image: mbopm/mosquito:2
     ports:
       - "127.0.0.1:1883:1883"
+      - "127.0.0.1:8080:8080"
     volumes:
       - mosquito_data:/mosquitto/data:rw
 

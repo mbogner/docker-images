@@ -1,0 +1,4 @@
+services:
+  mosquito:
+    build: .
+    image: mbopm/mosquito:2
