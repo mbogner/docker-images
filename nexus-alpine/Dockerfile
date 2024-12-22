@@ -2,8 +2,9 @@ FROM mbopm/openjdk-alpine-jre:jre17
 LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
 
 USER root
+# https://help.sonatype.com/en/download.html
 RUN apk add --no-cache curl && \
-    curl -L https://download.sonatype.com/nexus/3/nexus-3.74.0-05-unix.tar.gz --output nexus.tar.gz && \
+    curl -L https://download.sonatype.com/nexus/3/nexus-3.75.1-01-unix.tar.gz --output nexus.tar.gz && \
     tar -xf nexus.tar.gz && \
     rm -f nexus.tar.gz && \
     mv nexus* nexus && \
