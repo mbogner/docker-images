@@ -20,7 +20,6 @@ BRANCH_PLUGIN_VERSION="1.23.0"
 ../download.sh "https://github.com/dependency-check/dependency-check-sonar-plugin/releases/download/$DEPENDENCY_CHECK_VERSION/sonar-dependency-check-plugin-$DEPENDENCY_CHECK_VERSION.jar" "sonar-dependency-check-plugin.jar" || exit 97
 ../download.sh "https://github.com/sbaudoin/sonar-shellcheck/releases/download/v$SHELLCHECK_VERSION/sonar-shellcheck-plugin-$SHELLCHECK_VERSION.jar" "sonar-shellcheck-plugin.jar" || exit 97
 ../download.sh "https://github.com/sbaudoin/sonar-yaml/releases/download/v$SONAR_YAML_VERSION/sonar-yaml-plugin-$SONAR_YAML_VERSION.jar" "sonar-yaml-plugin.jar" || exit 97
-../download.sh "https://github.com/willemsrb/sonar-jdepend-plugin/releases/download/sonar-jdepend-plugin-$JDEPEND_VERSION/sonar-jdepend-plugin-$JDEPEND_VERSION.jar" "sonar-jdepend-plugin.jar" || exit 97
 ../download.sh "https://github.com/mc1arke/sonarqube-community-branch-plugin/releases/download/$BRANCH_PLUGIN_VERSION/sonarqube-community-branch-plugin-$BRANCH_PLUGIN_VERSION.jar" "sonarqube-community-branch-plugin.jar" || exit 97
 
 rm -rf ./plugins
@@ -30,7 +29,6 @@ cp ../downloads/sonar-apple-plugin.jar plugins/. || exit 96
 cp ../downloads/sonar-dependency-check-plugin.jar plugins/. || exit 96
 cp ../downloads/sonar-shellcheck-plugin.jar plugins/. || exit 96
 cp ../downloads/sonar-yaml-plugin.jar plugins/. || exit 96
-cp ../downloads/sonar-jdepend-plugin.jar plugins/. || exit 96
 cp ../downloads/sonarqube-community-branch-plugin.jar plugins/. || exit 96
 
 docker pull sonarqube:lts-community
