@@ -1,6 +1,5 @@
 services:
   sonarqube:
-    build: .
     image: mbopm/sonarqube:latest
     ports:
       - "127.0.0.1:9000:9000"
