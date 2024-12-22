@@ -25,7 +25,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data:rw
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready", "-d", "sonar" ]
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U sonar -d sonar'" ]
       interval: 5s
       timeout: 5s
       retries: 10
