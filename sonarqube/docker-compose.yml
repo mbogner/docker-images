@@ -1,0 +1,39 @@
+services:
+  sonarqube:
+    build: .
+    image: mbopm/sonarqube:latest
+    ports:
+      - "127.0.0.1:9000:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data:rw
+      - sonarqube_logs:/opt/sonarqube/logs:rw
+      - sonarqube_extensions:/opt/sonarqube/extensions:rw
+      - sonarqube_temp:/opt/sonarqube/temp:rw
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/sonar
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonar_pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: sonar
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar_pass
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data:rw
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "sonar" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
+  sonarqube_temp:
+  postgres_data:
