@@ -4,5 +4,6 @@ cd "${DIR}" || exit 98
 source ../_shared.sh || exit 99
 
 # version see Dockerfile
+docker pull alpine:3
 docker pull nginx:alpine
 build "cyberchef" "$PWD" "mbopm/cyberchef" "10.19.4" "latest" || exit 1
