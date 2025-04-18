@@ -1,0 +1,1 @@
+Docker Dind image with healthcheck.
