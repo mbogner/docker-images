@@ -1,5 +1,4 @@
-# https://hub.docker.com/_/docker/tags?page=&page_size=&ordering=&name=dind-alpine
-FROM docker:28.0.4-dind-alpine3.21
+FROM mbopm/docker-dind-alpine-healthcheck:28.1.1-dind-alpine3.21
 LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
 WORKDIR /workdir
 RUN apk add --no-cache openjdk21-jdk bash
