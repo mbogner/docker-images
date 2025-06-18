@@ -3,6 +3,7 @@ LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
 RUN apk add --no-cache \
         bash \
         openssh \
+        rsync \
         && \
     adduser -D -h /home/application -s /bin/bash application application
 USER application
