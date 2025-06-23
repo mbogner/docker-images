@@ -4,7 +4,7 @@ cd "${DIR}" || exit 98
 source ../_shared.sh || exit 99
 
 # https://github.com/insideapp-oss/sonar-apple/releases
-APPLE_PLUGIN_VERSION="0.5.0"
+APPLE_PLUGIN_VERSION="0.5.1"
 # https://github.com/dependency-check/dependency-check-sonar-plugin/releases
 DEPENDENCY_CHECK_VERSION="5.0.0"
 # https://github.com/sbaudoin/sonar-shellcheck/releases
@@ -14,7 +14,7 @@ SONAR_YAML_VERSION="1.9.1"
 # https://github.com/willemsrb/sonar-jdepend-plugin/releases
 JDEPEND_VERSION="1.1.1"
 # https://github.com/mc1arke/sonarqube-community-branch-plugin/releases
-BRANCH_PLUGIN_VERSION="1.23.0"
+BRANCH_PLUGIN_VERSION="25.5.0"
 
 ../download.sh "https://github.com/insideapp-oss/sonar-apple/releases/download/$APPLE_PLUGIN_VERSION/sonar-apple-plugin-$APPLE_PLUGIN_VERSION.jar" "sonar-apple-plugin.jar" || exit 97
 ../download.sh "https://github.com/dependency-check/dependency-check-sonar-plugin/releases/download/$DEPENDENCY_CHECK_VERSION/sonar-dependency-check-plugin-$DEPENDENCY_CHECK_VERSION.jar" "sonar-dependency-check-plugin.jar" || exit 97
@@ -32,6 +32,6 @@ cp ../downloads/sonar-yaml-plugin.jar plugins/. || exit 96
 cp ../downloads/sonarqube-community-branch-plugin.jar plugins/. || exit 96
 
 # https://hub.docker.com/_/sonarqube
-docker pull sonarqube:25.5.0.107428-community
-build "sonarqube" "$PWD" "mbopm/sonarqube" "25.5.0.107428-community" "latest"
+docker pull sonarqube:25.6.0.109173-community
+build "sonarqube" "$PWD" "mbopm/sonarqube" "25.6.0.109173-community" "latest"
 rm -rf ./plugins
