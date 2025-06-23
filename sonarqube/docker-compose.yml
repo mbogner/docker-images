@@ -1,6 +1,6 @@
 services:
   sonarqube:
-    image: mbopm/sonarqube:latest
+    image: mbopm/sonarqube:25.5.0.107428-community
     ports:
       - "127.0.0.1:9000:9000"
     volumes:

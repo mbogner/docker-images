@@ -32,6 +32,6 @@ cp ../downloads/sonar-yaml-plugin.jar plugins/. || exit 96
 cp ../downloads/sonarqube-community-branch-plugin.jar plugins/. || exit 96
 
 # https://hub.docker.com/_/sonarqube
-docker pull sonarqube:25.6.0.109173-community
-build "sonarqube" "$PWD" "mbopm/sonarqube" "25.6.0.109173-community" "latest"
+docker pull sonarqube:25.5.0.107428-community
+build "sonarqube" "$PWD" "mbopm/sonarqube" "25.5.0.107428-community" "latest"
 rm -rf ./plugins
