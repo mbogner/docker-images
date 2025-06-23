@@ -21,17 +21,19 @@ BRANCH_PLUGIN_VERSION="25.5.0"
 ../download.sh "https://github.com/sbaudoin/sonar-shellcheck/releases/download/v$SHELLCHECK_VERSION/sonar-shellcheck-plugin-$SHELLCHECK_VERSION.jar" "sonar-shellcheck-plugin.jar" || exit 97
 ../download.sh "https://github.com/sbaudoin/sonar-yaml/releases/download/v$SONAR_YAML_VERSION/sonar-yaml-plugin-$SONAR_YAML_VERSION.jar" "sonar-yaml-plugin.jar" || exit 97
 ../download.sh "https://github.com/mc1arke/sonarqube-community-branch-plugin/releases/download/$BRANCH_PLUGIN_VERSION/sonarqube-community-branch-plugin-$BRANCH_PLUGIN_VERSION.jar" "sonarqube-community-branch-plugin.jar" || exit 97
+../download.sh "https://github.com/mc1arke/sonarqube-community-branch-plugin/releases/download/$BRANCH_PLUGIN_VERSION/sonarqube-webapp.zip" "sonarqube-webapp.zip" || exit 97
 
-rm -rf ./plugins
-mkdir ./plugins
+rm -rf ./plugins ./web
+mkdir ./plugins ./web
 
 cp ../downloads/sonar-apple-plugin.jar plugins/. || exit 96
 cp ../downloads/sonar-dependency-check-plugin.jar plugins/. || exit 96
 cp ../downloads/sonar-shellcheck-plugin.jar plugins/. || exit 96
 cp ../downloads/sonar-yaml-plugin.jar plugins/. || exit 96
 cp ../downloads/sonarqube-community-branch-plugin.jar plugins/. || exit 96
+cp ../downloads/sonarqube-webapp.zip web/. || exit 96
 
 # https://hub.docker.com/_/sonarqube
 docker pull sonarqube:25.5.0.107428-community
 build "sonarqube" "$PWD" "mbopm/sonarqube" "25.5.0.107428-community" "latest"
-rm -rf ./plugins
+rm -rf ./plugins ./web
