@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/sonarqube
-FROM sonarqube:25.5.0.107428-community
+FROM sonarqube:25.9.0.112764-community
 LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
 
 # repeated to remember
