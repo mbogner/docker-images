@@ -1,0 +1,110 @@
+services:
+
+  postgres:
+    image: postgres:18-alpine
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - db:/var/lib/postgresql:rw
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: s3cr3t
+      TZ: UTC
+      PGTZ: UTC
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d db" ]
+      interval: 1s
+      timeout: 2s
+      retries: 10
+
+  mail:
+    image: axllent/mailpit:v1.28
+    container_name: mail
+    hostname: mail
+    ports:
+      - "127.0.0.1:1015:1015" # SMTP
+      - "127.0.0.1:8025:8025" # ui
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./auth:/auth:ro
+      - mail:/data:rw
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ALLOW_INSECURE: true
+      MP_UI_AUTH_FILE: /auth
+      MP_SMTP_AUTH_FILE: /auth
+      MP_SMTP_DISABLE_RDNS: true
+      TZ: UTC
+    healthcheck:
+      test: wget --spider --tries 1 http://smtp:pass123@localhost:8025
+      interval: 1s
+      timeout: 1s
+      retries: 5
+
+  zabbix-server: # https://hub.docker.com/r/zabbix/zabbix-server-pgsql
+    image: zabbix/zabbix-server-pgsql:alpine-latest
+    container_name: zabbix-server
+    hostname: zabbix-server
+    ports:
+      - "127.0.0.1:10051:10051" # Zabbix Server
+    environment:
+      DB_SERVER_HOST: postgres
+      DB_SERVER_PORT: 5432
+      POSTGRES_DB: db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: s3cr3t
+      ZBX_DEBUGLEVEL: 3
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  zabbix-web: # https://hub.docker.com/r/zabbix/zabbix-web-nginx-pgsql
+    image: zabbix/zabbix-web-nginx-pgsql:alpine-latest
+    container_name: zabbix-web
+    hostname: zabbix-web
+    ports:
+      - "127.0.0.1:8080:8080" # Zabbix Web
+    environment:
+      PHP_TZ: UTC
+      TZ: UTC
+      DB_SERVER_HOST: postgres
+      DB_SERVER_PORT: 5432
+      POSTGRES_DB: db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: s3cr3t
+      ZBX_DEBUGLEVEL: 3
+      ZBX_SERVER_HOST: zabbix-server
+      ZBX_SERVER_PORT: 10051
+    depends_on:
+      postgres:
+        condition: service_healthy
+      zabbix-server:
+        condition: service_started
+
+  zabbix-agent2: # https://hub.docker.com/r/zabbix/zabbix-agent2
+    image: zabbix/zabbix-agent2:alpine-latest
+    container_name: zabbix-agent2
+    hostname: zabbix-agent2
+    # If you only need the server (on the same docker network) to talk to the agent,
+    # you do NOT need to publish 10050 to the host.
+    # ports:
+    #   - "127.0.0.1:10050:10050"
+    environment:
+      TZ: UTC
+      ZBX_SERVER_HOST: zabbix-server    # passive checks allowed from this server
+      ZBX_SERVER_PORT: 10051
+      ZBX_HOSTNAME: zabbix-agent2       # must match the host name you create in the Zabbix UI
+      ZBX_SERVER_ACTIVE: zabbix-server
+    depends_on:
+      zabbix-server:
+        condition: service_started
+
+volumes:
+  db:
+  mail:
