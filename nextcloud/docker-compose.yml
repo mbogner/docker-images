@@ -1,0 +1,94 @@
+services:
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    hostname: postgres
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - db:/var/lib/postgresql/data:rw
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: s3cr3t
+      TZ: UTC
+      PGTZ: UTC
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d db" ]
+      interval: 1s
+      timeout: 2s
+      retries: 10
+
+  valkey:
+    image: valkey/valkey:8-alpine
+    container_name: valkey
+    hostname: valkey
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - valkey:/data
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      interval: 2s
+      timeout: 1s
+      retries: 10
+
+  mail:
+    image: axllent/mailpit:v1.28
+    container_name: mail
+    hostname: mail
+    ports:
+      - "127.0.0.1:8025:8025" # ui
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./auth:/auth:ro
+      - mail:/data:rw
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ALLOW_INSECURE: true
+      MP_UI_AUTH_FILE: /auth
+      MP_SMTP_AUTH_FILE: /auth
+      MP_SMTP_DISABLE_RDNS: true
+      TZ: UTC
+    healthcheck:
+      test: wget --spider --tries 1 http://smtp:pass123@localhost:8025
+      interval: 1s
+      timeout: 1s
+      retries: 5
+
+  nextcloud:
+    build: .
+    container_name: nextcloud
+    hostname: nextcloud
+    image: mbopm/nextcloud:latest
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - nextcloud-data:/var/www/nextcloud/data
+      - nextcloud-config:/var/www/nextcloud/config
+      - nextcloud-apps:/var/www/nextcloud/apps
+      - ./setup.sh:/var/www/nextcloud/setup.sh:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      mail:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost" ]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+
+volumes:
+  db:
+  valkey:
+  mail:
+  nextcloud-data:
+  nextcloud-config:
+  nextcloud-apps:

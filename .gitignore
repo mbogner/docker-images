@@ -1,6 +1,7 @@
 .idea/
 .vscode/
 downloads/
+tmp/
 *.iml
 *.tgz
 *.tar.gz
