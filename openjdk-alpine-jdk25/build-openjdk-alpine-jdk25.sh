@@ -4,4 +4,4 @@ cd "${DIR}" || exit 98
 source ../_shared.sh || exit 99
 
 docker pull alpine:3
-build "temurin-alpine-jre21" "$PWD" "mbopm/temurin-alpine-jre" "jre21" "latest"
+build "openjdk-alpine-jdk25" "$PWD" "mbopm/openjdk-alpine-jdk" "jdk25" "latest"

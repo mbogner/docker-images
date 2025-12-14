@@ -6,7 +6,7 @@ RUN useradd --home-dir /home/app -ms /bin/bash app && \
     sed -i -e 's/archive.ubuntu.com/at.archive.ubuntu.com/g' /etc/apt/sources.list && \
     apt update && apt install -y \
       git \
-      openjdk-17-jdk \
+      openjdk-25-jdk \
       openssh-client \
     && apt clean && apt autoclean && rm -rf /var/lib/apt/lists/*
 

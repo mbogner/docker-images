@@ -1,13 +1,13 @@
-# docker-dind-temurin-alpine
+# docker-dind-openjdk-alpine
 
-Alpine latest with Eclipse Temurin JDK 21 with docker in docker available. This way you can run testcontainers based
+Alpine latest with OpenJDK JDK 21 with docker in docker available. This way you can run testcontainers based
 tests inside the container without having to worry about how to get a working docker environment. This image is meant as
 build container for applications and not to run server applications inside.
 
 To run a gradle build you can easily do something like this:
 
 ```dockerfile
-FROM mbopm/docker-dind-temurin-alpine-jdk21:latest
+FROM mbopm/docker-dind-openjdk-alpine-jdk21:latest
 COPY ./ ./
 CMD dockerd-entrypoint.sh & ./gradlew build --no-daemon --stacktrace --info
 ```
@@ -17,5 +17,5 @@ was much faster than every gradle step that would rely on it. So that possible r
 runs.
 
 ----------
-- docker hub: https://hub.docker.com/repository/docker/mbopm/docker-dind-temurin-alpine
+- docker hub: https://hub.docker.com/repository/docker/mbopm/docker-dind-openjdk-alpine
 - git: https://github.com/mbogner/docker-images

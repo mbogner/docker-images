@@ -5,4 +5,4 @@ source ../_shared.sh || exit 99
 
 # see Dockerfile for version
 docker pull mbopm/docker-dind-alpine-healthcheck:29.1.3-dind-alpine3.23
-build "docker-dind-temurin-alpine-jdk21" "$PWD" "mbopm/docker-dind-temurin-alpine" "29.1.3-dind-alpine3.23-jdk21" "latest"
+build "docker-dind-openjdk-alpine-jdk25" "$PWD" "mbopm/docker-dind-openjdk-alpine" "29.1.3-dind-alpine3.23-jdk25" "latest"

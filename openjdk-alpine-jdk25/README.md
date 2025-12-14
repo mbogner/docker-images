@@ -1,4 +1,4 @@
-OpenJDK 17 installed on Alpine Linux.
+Same as https://hub.docker.com/repository/docker/mbopm/openjdk-alpine-jre/general but with a JDK instead.
 
 Though this image supports the same behaviour please consider using the JRE version for hosting applications.
 

@@ -1,11 +1,11 @@
 FROM alpine:3
 LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
-RUN wget -O /etc/apk/keys/adoptium.rsa.pub https://packages.adoptium.net/artifactory/api/security/keypair/public/repositories/apk && \
-    echo 'https://packages.adoptium.net/artifactory/apk/alpine/main' >> /etc/apk/repositories && \
-    apk add --no-cache \
+RUN apk add --no-cache \
         bash \
-        openjdk21-jdk \
+        openjdk25-jdk \
         openssh \
+        npm \
+        nodejs \
         && \
     adduser -D -h /home/application -s /bin/bash application application
 USER application
