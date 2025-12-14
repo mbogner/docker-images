@@ -4,5 +4,5 @@ cd "${DIR}" || exit 98
 source ../_shared.sh || exit 99
 
 # see Dockerfile for version
-docker pull node:lts-alpine3.21
-build "angular-builder-alpine" "$PWD" "mbopm/angular-builder-alpine" "lts-alpine3.21" "latest"
+docker pull node:lts-alpine3.22
+build "angular-builder-alpine" "$PWD" "mbopm/angular-builder-alpine" "lts-alpine3.22" "latest"

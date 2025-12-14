@@ -4,5 +4,5 @@ cd "${DIR}" || exit 98
 source ../_shared.sh || exit 99
 
 # see Dockerfile for version
-docker pull docker:28.1.1-dind-alpine3.21
-build "docker-dind-alpine-healthcheck" "$PWD" "mbopm/docker-dind-alpine-healthcheck" "28.1.1-dind-alpine3.21" "dind-alpine"
+docker pull docker:29.1.3-dind-alpine3.23
+build "docker-dind-alpine-healthcheck" "$PWD" "mbopm/docker-dind-alpine-healthcheck" "29.1.3-dind-alpine3.23" "dind-alpine"
