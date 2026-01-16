@@ -1,0 +1,53 @@
+volumes:
+  postgres_data:
+  n8n_data:
+
+services:
+
+  postgres-n8n:
+    image: postgres:18-alpine
+    container_name: postgres-n8n
+    hostname: postgres-n8n
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - postgres_data:/var/lib/postgresql:rw
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: s3cr3t
+      TZ: UTC
+      PGTZ: UTC
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d db" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n
+    hostname: n8n
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - n8n_data:/home/node/.n8n
+    environment:
+      GENERIC_TIMEZONE: Europe/Vienna
+      TZ: Europe/Vienna
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
+      N8N_RUNNERS_ENABLED: true
+      # db
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres-n8n
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: db
+      DB_POSTGRESDB_SCHEMA: public
+      DB_POSTGRESDB_USER: admin
+      DB_POSTGRESDB_PASSWORD: s3cr3t
+    depends_on:
+      postgres-n8n:
+        condition: service_healthy
