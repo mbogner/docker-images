@@ -1,6 +1,7 @@
 volumes:
   postgres_data:
   n8n_data:
+  sftp_data:
 
 services:
 
@@ -51,3 +52,22 @@ services:
     depends_on:
       postgres-n8n:
         condition: service_healthy
+
+  sftp:
+    build: ./sftp
+    image: n8n-sftp:local
+    container_name: sftp
+    hostname: sftp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pidof sshd >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    ports:
+      - "0.0.0.0:22:22"
+    volumes:
+      - sftp_data:/home/n8nftp/upload
+    # default user (change the password)
+    command: n8nftp:change-me:1000:1000:upload
