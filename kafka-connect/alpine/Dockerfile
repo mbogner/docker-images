@@ -1,4 +1,4 @@
-FROM mbopm/temurin-alpine-jre:jre21
+FROM mbopm/openjdk-alpine-jre:jre25
 LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
 USER root
 

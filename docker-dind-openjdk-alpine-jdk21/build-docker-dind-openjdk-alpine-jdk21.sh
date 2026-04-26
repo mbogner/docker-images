@@ -4,5 +4,5 @@ cd "${DIR}" || exit 98
 source ../_shared.sh || exit 99
 
 # see Dockerfile for version
-docker pull mbopm/docker-dind-alpine-healthcheck:29.1.3-dind-alpine3.23
-build "docker-dind-openjdk-alpine-jdk21" "$PWD" "mbopm/docker-dind-openjdk-alpine" "29.1.3-dind-alpine3.23-jdk21"
+docker pull mbopm/docker-dind-alpine-healthcheck:29.4.1-dind-alpine3.23
+build "docker-dind-openjdk-alpine-jdk21" "$PWD" "mbopm/docker-dind-openjdk-alpine" "29.4.1-dind-alpine3.23-jdk21"
