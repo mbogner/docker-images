@@ -8,7 +8,7 @@ RUN ln -s /opt/kafka_* /opt/kafka
 COPY script/* /opt/kafka/
 
 ENV KAFKA_HOME=/opt/kafka \
-    KAFKA_CONNECT_CONFIG=/opt/kafka/config/connect-standalone.properties
+    KAFKA_CONNECT_CONFIG=/opt/kafka/config/connect.properties
 WORKDIR /opt/kafka
 
 RUN apk add --no-cache bash &&\
