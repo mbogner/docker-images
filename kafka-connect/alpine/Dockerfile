@@ -19,5 +19,5 @@ RUN apk add --no-cache bash &&\
 
 USER kafka
 CMD ["/opt/kafka/start.sh"]
-VOLUME /data/kraft-combined-logs
+VOLUME /data/connect.offsets
 EXPOSE 8083
