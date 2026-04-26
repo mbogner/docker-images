@@ -19,5 +19,5 @@ RUN apk add --no-cache bash &&\
 
 USER kafka
 CMD ["/opt/kafka/start.sh"]
-VOLUME /data/connect.offsets
+VOLUME /data
 EXPOSE 8083
