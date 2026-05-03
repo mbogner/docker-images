@@ -3,7 +3,7 @@ LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
 
 # Moodle
 # https://download.moodle.org/releases/latest/
-RUN curl -fsSL https://download.moodle.org/download.php/direct/stable501/moodle-latest-501.tgz -o /tmp/moodle.tgz \
+RUN curl -fsSL https://download.moodle.org/download.php/direct/stable502/moodle-latest-502.tgz -o /tmp/moodle.tgz \
  && tar -xzf /tmp/moodle.tgz -C /var/www \
  && rm /tmp/moodle.tgz
 

@@ -1,10 +1,10 @@
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
 
 ADD kafka.tgz /opt/
 RUN ln -s /opt/kafka_* /opt/kafka && \
     apt update && \
-    apt install -y openjdk-21-jdk-headless netcat-traditional && \
+    apt install -y openjdk-25-jdk-headless netcat-traditional && \
     apt clean && apt autoclean && rm -rf /var/lib/apt/lists/*
 
 COPY script/* /opt/kafka/
