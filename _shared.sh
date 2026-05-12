@@ -28,7 +28,7 @@ function build {
   local BUILD_DIR=$2
   local IMAGE_NAME=$3
   local VERSION=$4
-  local EXTRA_TAG=$5
+  local EXTRA_TAG=${5:-}
 
   echo "#############################################################################################################"
   echo "# Build parameters:"
