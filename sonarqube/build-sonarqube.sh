@@ -4,6 +4,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "${DIR}" || exit 98
 source ../_shared.sh || exit 99
 
+rm -rf ../downloads
+
 # https://github.com/insideapp-oss/sonar-apple/releases
 APPLE_PLUGIN_VERSION="0.5.1"
 ../download.sh "https://github.com/insideapp-oss/sonar-apple/releases/download/$APPLE_PLUGIN_VERSION/sonar-apple-plugin-$APPLE_PLUGIN_VERSION.jar" "sonar-apple-plugin.jar" || exit 97
