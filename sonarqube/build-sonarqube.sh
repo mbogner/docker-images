@@ -23,7 +23,7 @@ SONAR_YAML_VERSION="1.9.1"
 ../download.sh "https://github.com/sbaudoin/sonar-yaml/releases/download/v$SONAR_YAML_VERSION/sonar-yaml-plugin-$SONAR_YAML_VERSION.jar" "sonar-yaml-plugin.jar" || exit 97
 
 # https://github.com/mc1arke/sonarqube-community-branch-plugin/releases
-BRANCH_PLUGIN_VERSION="26.4.0"
+BRANCH_PLUGIN_VERSION="26.5.0"
 ../download.sh "https://github.com/mc1arke/sonarqube-community-branch-plugin/releases/download/$BRANCH_PLUGIN_VERSION/sonarqube-community-branch-plugin-$BRANCH_PLUGIN_VERSION.jar" "sonarqube-community-branch-plugin.jar" || exit 97
 ../download.sh "https://github.com/mc1arke/sonarqube-community-branch-plugin/releases/download/$BRANCH_PLUGIN_VERSION/sonarqube-webapp.zip" "sonarqube-webapp.zip" || exit 97
 
@@ -38,6 +38,6 @@ cp ../downloads/sonarqube-community-branch-plugin.jar plugins/. || exit 96
 cp ../downloads/sonarqube-webapp.zip web/. || exit 96
 
 # https://hub.docker.com/_/sonarqube
-docker pull sonarqube:26.4.0.121862-community
-build "sonarqube" "$PWD" "mbopm/sonarqube" "26.4.0.121862-community" "latest"
+docker pull sonarqube:26.5.0.122743-community
+build "sonarqube" "$PWD" "mbopm/sonarqube" "26.5.0.122743-community" "latest"
 rm -rf ./plugins ./web

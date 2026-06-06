@@ -1,8 +1,8 @@
 FROM alpine:3 AS unzipper
 RUN apk add --no-cache unzip
-# https://gchq.github.io/CyberChef => top left corner
+# https://github.com/gchq/CyberChef - see latest release
 ARG CYBERCHEF_VERSION=11.0.0
-ADD https://gchq.github.io/CyberChef/CyberChef_v${CYBERCHEF_VERSION}.zip /data/
+ADD https://github.com/gchq/CyberChef/releases/download/v${CYBERCHEF_VERSION}/CyberChef_v${CYBERCHEF_VERSION}.zip /data/
 RUN mkdir /data/out && unzip /data/CyberChef_v$CYBERCHEF_VERSION.zip -d /data/out/
 
 FROM nginx:alpine

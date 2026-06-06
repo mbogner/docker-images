@@ -12,3 +12,8 @@ also a [download.sh](download.sh) script that allows to get files into a shared 
 
 - docker hub: https://hub.docker.com/repositories/mbopm
 - git: https://github.com/mbogner/docker-images
+
+-------
+
+Moddle removed because there is an officially maintained image at https://hub.docker.com/r/moodlehq/moodle-php-apache.
+DevDNS removed because the project is dead. Just use dnsmasq instead.

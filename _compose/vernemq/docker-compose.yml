@@ -1,0 +1,69 @@
+volumes:
+  vernemq1_data:
+  vernemq1_log:
+  vernemq2_data:
+  vernemq2_log:
+
+services:
+
+  vernemq1:
+    image: vernemq/vernemq:latest
+    container_name: vernemq1
+    hostname: vernemq1.cluster.local
+    networks:
+      default:
+        aliases:
+          - vernemq1.cluster.local
+    ports:
+      - "127.0.0.1:1883:1883"
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8888:8888"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - vernemq1_data:/vernemq/data
+      - vernemq1_log:/vernemq/log
+    environment:
+      DOCKER_VERNEMQ_ACCEPT_EULA: "yes"
+      DOCKER_VERNEMQ_ALLOW_ANONYMOUS: "off"
+      DOCKER_VERNEMQ_NODENAME: "vernemq1.cluster.local"
+      DOCKER_VERNEMQ_USER_admin: "admin"
+    healthcheck:
+      test: ["CMD-SHELL", "vernemq ping | grep -q pong"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+  vernemq2:
+    image: vernemq/vernemq:latest
+    container_name: vernemq2
+    hostname: vernemq2.cluster.local
+    networks:
+      default:
+        aliases:
+          - vernemq2.cluster.local
+    depends_on:
+      vernemq1:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:1884:1883"
+      - "127.0.0.1:8081:8080"
+      - "127.0.0.1:8889:8888"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - vernemq2_data:/vernemq/data
+      - vernemq2_log:/vernemq/log
+    environment:
+      DOCKER_VERNEMQ_ACCEPT_EULA: "yes"
+      DOCKER_VERNEMQ_ALLOW_ANONYMOUS: "off"
+      DOCKER_VERNEMQ_NODENAME: "vernemq2.cluster.local"
+      DOCKER_VERNEMQ_DISCOVERY_NODE: "vernemq1.cluster.local"
+      DOCKER_VERNEMQ_USER_admin: "admin"
+    healthcheck:
+      test: ["CMD-SHELL", "vernemq ping | grep -q pong"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 15s

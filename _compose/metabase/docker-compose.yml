@@ -1,0 +1,53 @@
+services:
+
+  metabase-db:
+    image: postgres:16-alpine
+    container_name: ordata_metabase_db
+    hostname: ordata_metabase_db
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - metabase-db:/var/lib/postgresql/data:rw
+    environment:
+      POSTGRES_DB: metabase
+      POSTGRES_USER: metabase
+      POSTGRES_PASSWORD: metabase
+      PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: UTC
+      PGTZ: UTC
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U metabase -d metabase" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+  metabase:
+    image: eclipse-temurin:21-jre-jammy
+    container_name: ordata_metabase
+    hostname: ordata_metabase
+    command: [ "java", "-jar", "/app/app.jar" ]
+    environment:
+      MB_JETTY_PORT: 3001
+      MB_DB_TYPE: postgres
+      MB_DB_HOST: metabase-db
+      MB_DB_PORT: 5432
+      MB_DB_DBNAME: metabase
+      MB_DB_USER: metabase
+      MB_DB_PASS: metabase
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./metabase.jar:/app/app.jar
+    ports:
+      - "127.0.0.1:3001:3001"
+    depends_on:
+      metabase-db:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail -I http://localhost:3001/api/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  metabase-db:

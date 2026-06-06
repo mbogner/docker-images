@@ -11,7 +11,7 @@ export DOWNLOADS_SCRIPT
 ####################################################################################
 KAFKA_SCALA_VERSION="2.13"
 export KAFKA_SCALA_VERSION
-KAFKA_VERSION="4.2.0"
+KAFKA_VERSION="4.3.0"
 export KAFKA_VERSION
 
 echo "#############################################################################################################"
