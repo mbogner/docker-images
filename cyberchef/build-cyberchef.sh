@@ -6,4 +6,4 @@ source ../_shared.sh || exit 99
 # version see Dockerfile
 docker pull alpine:3
 docker pull nginx:alpine
-build "cyberchef" "$PWD" "mbopm/cyberchef" "11.0.0" "latest" || exit 1
+build "cyberchef" "$PWD" "mbopm/cyberchef" "11.2.0" "latest" || exit 1
