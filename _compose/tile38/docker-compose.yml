@@ -1,0 +1,32 @@
+services:
+
+  # https://tile38.com/topics/configuration
+  tile1:
+    image: tile38/tile38:latest
+    volumes:
+      - tile1:/data
+      - ./tile38/config-leader.json:/data/config
+    command: [ "tile38-server", "-d", "/data", "--metrics-addr=0.0.0.0:4321" ]
+  tile2:
+    image: tile38/tile38:latest
+    volumes:
+      - tile2:/data
+      - ./tile38/config-follower.json:/data/config
+    command: [ "tile38-server", "-d", "/data", "--metrics-addr=0.0.0.0:4321" ]
+    depends_on:
+      - tile1
+
+  haproxy: # admin:admin
+    image: haproxy:latest
+    ports:
+      - "127.0.0.1:9000:9000" # stats
+      - "127.0.0.1:9851:9851" # tile38
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    links:
+      - tile1
+      - tile2
+
+volumes:
+  tile1:
+  tile2:
