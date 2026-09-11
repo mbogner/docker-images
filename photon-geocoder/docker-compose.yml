@@ -1,0 +1,17 @@
+services:
+  photon-geocoder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mbopm/photon-geocoder:latest
+    restart: "no"
+    ports:
+      - "127.0.0.1:2322:2322"
+    volumes:
+      - ./photon_data:/home/application/photon_data:rw
+    healthcheck:
+      test: "nc -z 127.0.0.1 2322"
+      interval: 10s
+      start_period: 10s
+      timeout: 2s
+      retries: 6
