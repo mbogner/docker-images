@@ -38,6 +38,6 @@ cp ../downloads/sonarqube-community-branch-plugin.jar plugins/. || exit 96
 cp ../downloads/sonarqube-webapp.zip web/. || exit 96
 
 # https://hub.docker.com/_/sonarqube
-docker pull sonarqube:26.6.0.123539-community
-build "sonarqube" "$PWD" "mbopm/sonarqube" "26.6.0.123539-community" "latest"
+docker pull sonarqube:26.5.0.122743-community
+build "sonarqube" "$PWD" "mbopm/sonarqube" "26.5.0.122743-community" "latest"
 rm -rf ./plugins ./web
