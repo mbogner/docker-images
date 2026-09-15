@@ -10,7 +10,7 @@ $DOWNLOADS_SCRIPT "https://github.com/komoot/photon/releases/download/$PHOTO_VER
 cp ../downloads/photon.jar .
 
 # see README.md for version
-docker pull mbopm/openjdk-alpine-jdk:latest
+docker pull mbopm/openjdk-alpine-jre:latest
 build "photon-geocoder" "$PWD" "mbopm/photon-geocoder" "$PHOTO_VERSION" "latest"
 
 rm -f photon.jar

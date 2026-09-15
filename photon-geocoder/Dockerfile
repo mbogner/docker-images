@@ -1,4 +1,4 @@
-FROM mbopm/openjdk-alpine-jdk:latest
+FROM mbopm/openjdk-alpine-jre:latest
 LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
 
 # base image sets workdir to /home/application
