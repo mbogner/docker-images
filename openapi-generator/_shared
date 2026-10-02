@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -eu
+IMAGE=mbopm/openapi-generator
+
+docker pull node:26-alpine

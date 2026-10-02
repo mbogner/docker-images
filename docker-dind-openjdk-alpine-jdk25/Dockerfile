@@ -1,4 +1,4 @@
-FROM mbopm/docker-dind-alpine-healthcheck:29.6.1-dind-alpine3.24
+FROM mbopm/docker-dind-alpine-healthcheck:29.8.0-dind-alpine3.24
 LABEL org.opencontainers.image.authors="outrage_breath.0t@icloud.com"
 WORKDIR /workdir
 RUN apk add --no-cache openjdk25-jdk bash
