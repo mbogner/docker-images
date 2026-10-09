@@ -14,6 +14,12 @@ export KAFKA_SCALA_VERSION
 KAFKA_VERSION="4.3.1"
 export KAFKA_VERSION
 
+####################################################################################
+# latest of debezium version see https://repo1.maven.org/maven2/io/debezium/debezium-connector-postgres/
+####################################################################################
+DEBEZIUM_VERSION="3.7.0.Final"
+export DEBEZIUM_VERSION
+
 echo "#############################################################################################################"
 echo "# Environment settings:"
 echo "# PROJECT_ROOT_DIR=$PROJECT_ROOT_DIR"
@@ -21,6 +27,7 @@ echo "# DOWNLOADS_SCRIPT=$DOWNLOADS_SCRIPT"
 echo "# DOWNLOADS_DIR=$DOWNLOADS_DIR"
 echo "# KAFKA_SCALA_VERSION=$KAFKA_SCALA_VERSION"
 echo "# KAFKA_VERSION=$KAFKA_VERSION"
+echo "# DEBEZIUM_VERSION=$DEBEZIUM_VERSION"
 echo "#############################################################################################################"
 
 function build {
