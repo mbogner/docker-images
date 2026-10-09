@@ -14,4 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-bin/connect-standalone.sh "$KAFKA_CONNECT_CONFIG"
+bin/connect-distributed.sh "$KAFKA_CONNECT_CONFIG"

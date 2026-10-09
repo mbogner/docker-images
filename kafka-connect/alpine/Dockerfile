@@ -8,16 +8,14 @@ RUN ln -s /opt/kafka_* /opt/kafka
 COPY script/* /opt/kafka/
 
 ENV KAFKA_HOME=/opt/kafka \
-    KAFKA_CONNECT_CONFIG=/opt/kafka/config/connect.properties
+    KAFKA_CONNECT_CONFIG=/opt/kafka/config/connect-distributed.properties
 WORKDIR /opt/kafka
 
 RUN apk add --no-cache bash &&\
     adduser -D -h /opt/kafka -s /bin/bash kafka kafka && \
-    mkdir -p /data/kraft-combined-logs && \
-    chown -R kafka:kafka /opt/kafka* /data/kraft-combined-logs && \
+    chown -R kafka:kafka /opt/kafka* && \
     chmod +x /opt/kafka/*.sh
 
 USER kafka
 CMD ["/opt/kafka/start.sh"]
-VOLUME /data
 EXPOSE 8083
