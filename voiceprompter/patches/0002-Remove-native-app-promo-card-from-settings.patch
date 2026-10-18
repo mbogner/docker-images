@@ -1,0 +1,326 @@
+From b50c6d3b5357baeadc11be04d231bc968a9c0e08 Mon Sep 17 00:00:00 2001
+From: Manuel Bogner <manuel.bogner@openresearch.com>
+Date: Sun, 18 Oct 2026 13:19:39 +0200
+Subject: [PATCH 2/3] Remove native app promo card from settings
+
+---
+ app/index.html        |  32 ------------
+ src/elements.ts       |   8 ---
+ src/main.ts           |  94 +----------------------------------
+ src/platform-promo.ts | 113 ------------------------------------------
+ 4 files changed, 2 insertions(+), 245 deletions(-)
+ delete mode 100644 src/platform-promo.ts
+
+diff --git a/app/index.html b/app/index.html
+index 15fd32e..8141e3a 100644
+--- a/app/index.html
++++ b/app/index.html
+@@ -475,38 +475,6 @@
+                 <div id="languageSelectSettingsContainer" class="relative"></div>
+             </div>
+ 
+-            <!-- Native App Promo Card -->
+-            <div class="mb-4 pb-4 border-b border-neutral-800">
+-                <button id="settings-native-app-banner"
+-                    class="w-full text-left relative overflow-hidden rounded-lg p-[1px] group transition-all">
+-                    <!-- Spinning border gradient -->
+-                    <div class="absolute inset-[-200%] animate-[spin_12s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#FFBB00_0%,#FFBB00_40%,transparent_70%,#FFBB00_100%)] opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+-                    
+-                    <!-- Inner content -->
+-                    <div class="relative w-full h-full bg-neutral-800 group-hover:bg-neutral-700 rounded-[7px] p-3 transition-colors flex items-center justify-between">
+-                        <div>
+-                            <div
+-                                class="text-sm font-bold text-white group-hover:text-[#FFBB00] transition-colors flex items-center gap-2">
+-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+-                                    stroke="currentColor">
+-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+-                                        d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+-                                </svg>
+-                                <span id="nativePromoTitle">Try native app</span>
+-                            </div>
+-                            <div id="nativePromoSubtitle"
+-                                class="text-xs text-neutral-400 mt-1 flex flex-col justify-center min-h-[32px]">
+-                            </div>
+-                        </div>
+-                        <svg xmlns="http://www.w3.org/2000/svg"
+-                            class="h-4 w-4 text-neutral-500 group-hover:text-white transition-colors" fill="none"
+-                            viewBox="0 0 24 24" stroke="currentColor">
+-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+-                        </svg>
+-                    </div>
+-                </button>
+-            </div>
+-
+             <!-- Scrolling Mode -->
+             <div class="mb-4 pb-4 border-b border-neutral-800">
+                 <label for="scrollingModeSelect" class="block text-xs text-neutral-400 mb-2">Scrolling Mode</label>
+diff --git a/src/elements.ts b/src/elements.ts
+index 7c3e1ef..045b003 100644
+--- a/src/elements.ts
++++ b/src/elements.ts
+@@ -66,10 +66,6 @@ export interface Elements {
+     // Language Selection
+     languageSelectContainer: HTMLElement;
+     languageSelectSettingsContainer: HTMLElement;
+-    // Native App Promo Card
+-    settingsNativeAppBanner: HTMLElement;
+-    nativePromoTitle: HTMLElement;
+-    nativePromoSubtitle: HTMLElement;
+     // Toggles
+     preserveFormattingToggle: HTMLInputElement;
+     voiceCommandToggle: HTMLInputElement;
+@@ -188,10 +184,6 @@ export function initElements(): void {
+         // Language Selection
+         languageSelectContainer: document.getElementById('languageSelectContainer')!,
+         languageSelectSettingsContainer: document.getElementById('languageSelectSettingsContainer')!,
+-        // Native App Promo Card
+-        settingsNativeAppBanner: document.getElementById('settings-native-app-banner')!,
+-        nativePromoTitle: document.getElementById('nativePromoTitle')!,
+-        nativePromoSubtitle: document.getElementById('nativePromoSubtitle')!,
+         // Toggles
+         preserveFormattingToggle: document.getElementById('preserveFormattingToggle') as HTMLInputElement,
+         voiceCommandToggle: document.getElementById('voiceCommandToggle') as HTMLInputElement,
+diff --git a/src/main.ts b/src/main.ts
+index 6e81d44..eaa57fe 100644
+--- a/src/main.ts
++++ b/src/main.ts
+@@ -11,7 +11,6 @@ import { enterVideoMode, exitVideoMode, toggleVideoLayout, startRecording, stopR
+ import { detectAll } from 'tinyld/light';
+ import { fetchGoogleDocText } from './gdoc';
+ import { enumerateAndPopulateDevices } from './devices';
+-import { detectVisitorPlatform, getNativePromo } from './platform-promo';
+ 
+ const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+ 
+@@ -607,107 +606,18 @@ els.resetAppBtn.addEventListener('click', resetApp);
+ // Restart Script Button
+ els.restartScriptBtn.addEventListener('click', restartScript);
+ 
+-const visitorPlatform = detectVisitorPlatform();
+-const nativePromo = getNativePromo(visitorPlatform);
+-els.nativePromoTitle.textContent = nativePromo.title;
+-
+-let promoTimeout: number | null = null;
+-let currentPromoPairIndex = 0;
+-let currentPromoPairStatic = '';
+-let currentPromoWord = '';
+-
+-function startPromoAnimation() {
+-    if (promoTimeout) {
+-        window.clearTimeout(promoTimeout);
+-        promoTimeout = null;
+-    }
+-
+-    const subtitleEl = els.nativePromoSubtitle;
+-
+-    const pair = nativePromo.pairs[currentPromoPairIndex];
+-    currentPromoPairIndex = (currentPromoPairIndex + 1) % nativePromo.pairs.length;
+-    
+-    currentPromoPairStatic = pair.line1;
+-
+-    if (pair.rotating.length === 0) {
+-        currentPromoWord = '';
+-        subtitleEl.innerHTML = `<div>${pair.line1}</div><div>${pair.line2}</div>`;
+-        return;
+-    }
+-
+-    let currentIndex = 0;
+-    currentPromoWord = pair.rotating[currentIndex];
+-
+-    subtitleEl.innerHTML = `<div>${pair.line1}</div><div class="flex items-center">${pair.line2}<span class="promo-rotating-word inline-block transition-all duration-500 opacity-100 translate-y-0 text-[#FFBB00] font-medium whitespace-nowrap ml-1">${pair.rotating[currentIndex]}</span></div>`;
+-
+-    const rotatingEl = subtitleEl.querySelector('.promo-rotating-word') as HTMLElement;
+-
+-    function animateNextWord() {
+-        promoTimeout = window.setTimeout(() => {
+-            if (!document.body.contains(rotatingEl)) return;
+-
+-            rotatingEl.classList.remove('opacity-100', 'translate-y-0');
+-            rotatingEl.classList.add('opacity-0', '-translate-y-2');
+-
+-            promoTimeout = window.setTimeout(() => {
+-                if (!document.body.contains(rotatingEl)) return;
+-                currentIndex = (currentIndex + 1) % pair.rotating.length;
+-                currentPromoWord = pair.rotating[currentIndex];
+-                rotatingEl.textContent = pair.rotating[currentIndex];
+-
+-                rotatingEl.classList.remove('-translate-y-2', 'transition-all', 'duration-500');
+-                rotatingEl.classList.add('translate-y-2');
+-
+-                void rotatingEl.offsetWidth;
+-
+-                rotatingEl.classList.add('transition-all', 'duration-500');
+-                rotatingEl.classList.remove('opacity-0', 'translate-y-2');
+-                rotatingEl.classList.add('opacity-100', 'translate-y-0');
+-
+-                animateNextWord();
+-            }, 500);
+-        }, 1500);
+-    }
+-
+-    animateNextWord();
+-}
+-
+-function stopPromoAnimation() {
+-    if (promoTimeout) {
+-        window.clearTimeout(promoTimeout);
+-        promoTimeout = null;
+-    }
+-}
+-
+ // Toggle Settings
+ els.toggleSettingsBtn.addEventListener('click', () => {
+     (window as any).umami?.track('settings-toggle');
+     const isHidden = els.settingsPanel.classList.toggle('hidden');
+-    if (!isHidden) {
+-        startPromoAnimation();
+-        if (!isIOS) {
+-            enumerateAndPopulateDevices(false);
+-        }
+-    } else {
+-        stopPromoAnimation();
++    if (!isHidden && !isIOS) {
++        enumerateAndPopulateDevices(false);
+     }
+ });
+ 
+ // Close Settings
+ els.closeSettingsBtn.addEventListener('click', () => {
+     els.settingsPanel.classList.add('hidden');
+-    stopPromoAnimation();
+-});
+-
+-// Native App Promo Card Banner
+-els.settingsNativeAppBanner.addEventListener('click', () => {
+-    const promoData = currentPromoWord ? `${currentPromoPairStatic} - ${currentPromoWord}` : currentPromoPairStatic;
+-    (window as any).umami?.track(nativePromo.analyticsEvent, {
+-        destination: nativePromo.href,
+-        sourcePlatform: visitorPlatform,
+-        variant: promoData
+-    });
+-    window.location.href = nativePromo.href;
+ });
+ 
+ // Font Size Slider
+diff --git a/src/platform-promo.ts b/src/platform-promo.ts
+deleted file mode 100644
+index 9d2a331..0000000
+--- a/src/platform-promo.ts
++++ /dev/null
+@@ -1,113 +0,0 @@
+-export type VisitorPlatform = 'ios' | 'android' | 'mac' | 'linux' | 'windows' | 'other';
+-export type NativePromoPlatform = 'ios' | 'android' | 'mac';
+-
+-export interface NativePromoPair {
+-    line1: string;
+-    line2: string;
+-    rotating: string[];
+-}
+-
+-export interface NativePromo {
+-    platform: NativePromoPlatform;
+-    title: string;
+-    href: string;
+-    analyticsEvent: string;
+-    pairs: NativePromoPair[];
+-}
+-
+-interface NavigatorPlatformData {
+-    userAgent: string;
+-    platform: string;
+-    maxTouchPoints: number;
+-}
+-
+-const NATIVE_PROMOS: Record<NativePromoPlatform, NativePromo> = {
+-    ios: {
+-        platform: 'ios',
+-        title: 'Try native iOS app',
+-        href: '/ios/',
+-        analyticsEvent: 'settings-banner-ios',
+-        pairs: [
+-            {
+-                line1: 'Next-gen voice scrolling',
+-                line2: 'Handles ',
+-                rotating: ['pauses', 'ad-libs', 'skipped lines', 'changes of pace']
+-            },
+-            {
+-                line1: 'Float over apps or record in 4K',
+-                line2: 'Perfect for ',
+-                rotating: ['Reels', 'TikTok', 'YouTube Shorts', 'live streams']
+-            }
+-        ]
+-    },
+-    android: {
+-        platform: 'android',
+-        title: 'Try native Android app',
+-        href: '/android/',
+-        analyticsEvent: 'settings-banner-android',
+-        pairs: [
+-            {
+-                line1: 'Next-gen voice scrolling',
+-                line2: 'Handles ',
+-                rotating: ['pauses', 'ad-libs', 'skipped lines', 'changes of pace']
+-            },
+-            {
+-                line1: 'Float over apps or record in 4K',
+-                line2: 'Perfect for ',
+-                rotating: ['Reels', 'TikTok', 'YouTube Shorts', 'live streams']
+-            }
+-        ]
+-    },
+-    mac: {
+-        platform: 'mac',
+-        title: 'Try native macOS app',
+-        href: '/mac/',
+-        analyticsEvent: 'settings-banner-mac',
+-        pairs: [
+-            {
+-                line1: 'Next-gen voice scrolling',
+-                line2: 'Handles ',
+-                rotating: ['pauses', 'ad-libs', 'skipped lines', 'changes of pace']
+-            },
+-            {
+-                line1: 'Invisible during screen sharing',
+-                line2: 'Perfect for ',
+-                rotating: ['video calls', 'sales demos', 'interviews', 'presentations']
+-            },
+-            {
+-                line1: 'Invisible on screen recordings',
+-                line2: 'Perfect for ',
+-                rotating: ['Looms', 'YouTube videos', 'tutorials', 'product demos']
+-            }
+-        ]
+-    }
+-};
+-
+-export function detectVisitorPlatform(
+-    navigatorData: NavigatorPlatformData = navigator
+-): VisitorPlatform {
+-    const { userAgent, platform, maxTouchPoints } = navigatorData;
+-
+-    if (/iPad|iPhone|iPod/i.test(userAgent) || (platform === 'MacIntel' && maxTouchPoints > 1)) {
+-        return 'ios';
+-    }
+-    if (/Android/i.test(userAgent)) {
+-        return 'android';
+-    }
+-    if (/Mac/i.test(platform) || /Macintosh|Mac OS X/i.test(userAgent)) {
+-        return 'mac';
+-    }
+-    if (/Linux/i.test(platform) || /Linux/i.test(userAgent)) {
+-        return 'linux';
+-    }
+-    if (/Win/i.test(platform) || /Windows/i.test(userAgent)) {
+-        return 'windows';
+-    }
+-    return 'other';
+-}
+-
+-export function getNativePromo(visitorPlatform: VisitorPlatform): NativePromo {
+-    if (visitorPlatform === 'ios') return NATIVE_PROMOS.ios;
+-    if (visitorPlatform === 'android') return NATIVE_PROMOS.android;
+-    return NATIVE_PROMOS.mac;
+-}
+-- 
+2.54.0 (Apple Git-157)
+

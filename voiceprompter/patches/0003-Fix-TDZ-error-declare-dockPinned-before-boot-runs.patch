@@ -1,0 +1,36 @@
+From c9587de132c82b884db9a22f0af064b123214ac0 Mon Sep 17 00:00:00 2001
+From: Manuel Bogner <manuel.bogner@openresearch.com>
+Date: Sun, 18 Oct 2026 13:41:56 +0200
+Subject: [PATCH 3/3] Fix TDZ error: declare dockPinned before boot() runs
+
+---
+ src/main.ts | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/main.ts b/src/main.ts
+index eaa57fe..1482e18 100644
+--- a/src/main.ts
++++ b/src/main.ts
+@@ -1177,6 +1177,11 @@ function boot(): void {
+     }, 500);
+ }
+ 
++// Guard flag for pinDockToVisualViewport(). Must be declared before boot() runs:
++// boot() is called synchronously below and a later `let` would still be in its
++// temporal dead zone ("Cannot access 'dockPinned' before initialization").
++let dockPinned = false;
++
+ // Run boot as soon as the DOM is ready. We must NOT rely solely on the
+ // DOMContentLoaded event: this is an ES module (deferred), so by the time it
+ // evaluates the DOM is already parsed and the event may have *already fired*
+@@ -1205,7 +1210,6 @@ window.addEventListener('pageshow', () => {
+ // Idempotent: called from both module-eval and DOMContentLoaded so the dock is
+ // pinned regardless of which fires first (with async module loading either can
+ // win). A guard flag ensures listeners/observers are only wired once.
+-let dockPinned = false;
+ function pinDockToVisualViewport(): void {
+     const dock = document.getElementById('mainControlsDock');
+     const vv = window.visualViewport;
+-- 
+2.54.0 (Apple Git-157)
+
