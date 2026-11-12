@@ -26,6 +26,9 @@ services:
     environment:
       # timezone for logs, notification dates and timeperiods (e.g. workhours)
       TZ: Europe/Vienna
+      # minutes within which all checks run for the first time after a start or reload,
+      # nagios spreads them to avoid load peaks (default: 30)
+      MAX_CHECK_SPREAD: 1
       # recipient of notifications, overwrites the email of contact nagiosadmin
       # in etc/objects/contacts.cfg on every start when set
       NAGIOSADMIN_EMAIL: ${NAGIOSADMIN_EMAIL:-admin@example.com}
