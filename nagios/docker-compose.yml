@@ -1,0 +1,80 @@
+services:
+  mail:
+    image: axllent/mailpit:latest
+    ports:
+      - "127.0.0.1:8025:8025" # ui
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./auth:/auth:ro
+      - mail-data:/data:rw
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ALLOW_INSECURE: true
+      MP_UI_AUTH_FILE: /auth
+      MP_SMTP_AUTH_FILE: /auth
+      MP_SMTP_DISABLE_RDNS: true
+      TZ: UTC
+    healthcheck:
+      test: wget --spider --tries 1 http://smtp:pass123@localhost:8025
+      interval: 1s
+      timeout: 1s
+      retries: 5
+
+  nagios:
+    image: mbopm/nagios:latest
+    environment:
+      # timezone for logs, notification dates and timeperiods (e.g. workhours)
+      TZ: Europe/Vienna
+      # recipient of notifications, overwrites the email of contact nagiosadmin
+      # in etc/objects/contacts.cfg on every start when set
+      NAGIOSADMIN_EMAIL: ${NAGIOSADMIN_EMAIL:-admin@example.com}
+      # outgoing mail server, defaults to the local mailpit (see service mail)
+      SMTP_HOST: ${SMTP_HOST:-mail}
+      SMTP_TLS: ${SMTP_TLS:-off} # off | starttls | tls
+      SMTP_PORT: ${SMTP_PORT:-1025} # default: 25 for off, 587 for starttls, 465 for tls
+      SMTP_FROM: ${SMTP_FROM:-nagios@example.com}
+      SMTP_USER: ${SMTP_USER:-smtp}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-pass123}
+    volumes:
+      - nagios-etc:/opt/nagios/etc
+      - nagios-var:/opt/nagios/var
+      # additional hosts, services and commands, all *.cfg files are loaded
+      # reload after changes with: docker compose kill -s HUP nagios
+      - ./conf.d:/opt/nagios/etc/conf.d:ro
+    depends_on:
+      mail:
+        condition: service_healthy
+
+  nagios-web:
+    image: mbopm/nagios-web:latest
+    environment:
+      # timezone for dates shown in the web interface, keep in sync with service nagios
+      TZ: Europe/Vienna
+      # only used on first start to create etc/htpasswd.users
+      # user is nagiosadmin
+      NAGIOSADMIN_PASSWORD: ${NAGIOSADMIN_PASSWORD:?set NAGIOSADMIN_PASSWORD}
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      # both containers must share etc/ and var/: the CGIs read the config and
+      # status files and send commands through the named pipe var/rw/nagios.cmd
+      - nagios-etc:/opt/nagios/etc
+      - nagios-var:/opt/nagios/var
+      - ./conf.d:/opt/nagios/etc/conf.d:ro
+    depends_on:
+      nagios:
+        condition: service_healthy
+
+volumes:
+  mail-data:
+  nagios-etc:
+  nagios-var:
+
+networks:
+  default:
+    ipam:
+      config:
+        # fixed subnet outside VPN routes (172.21-25.x, 192.168.40/50.x, 10.x/24 ranges)
+        # docker otherwise picks the next free 172.x.0.0/16, which may hide VPN hosts
+        - subnet: 10.250.0.0/24

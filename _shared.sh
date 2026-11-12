@@ -36,6 +36,7 @@ function build {
   local IMAGE_NAME=$3
   local VERSION=$4
   local EXTRA_TAG=${5:-}
+  local TARGET=${6:-}
 
   echo "#############################################################################################################"
   echo "# Build parameters:"
@@ -44,6 +45,7 @@ function build {
   echo "# IMAGE_NAME=$IMAGE_NAME"
   echo "# VERSION=$VERSION"
   echo "# EXTRA_TAG=$EXTRA_TAG"
+  echo "# TARGET=$TARGET"
   echo "#############################################################################################################"
   echo "# in case a builder named $BUILD_NAME exists that you're not using anymore, you can remove it with:"
   echo "#     docker buildx rm $BUILD_NAME"
@@ -52,15 +54,20 @@ function build {
 
   docker buildx create --name "$BUILD_NAME" --platform linux/amd64,linux/arm64 --driver docker-container || exit 1
 
+  local BUILD_ARGS=(-t "${IMAGE_NAME}:${VERSION}")
   if [[ "" == "$EXTRA_TAG" ]]; then
     echo "# no extra tag"
-    docker buildx build --builder "$BUILD_NAME" --platform linux/amd64,linux/arm64 \
-      -t "${IMAGE_NAME}:${VERSION}" --push "${BUILD_DIR}" || exit 2
   else
     echo "# extra tag: $EXTRA_TAG"
-    docker buildx build --builder "$BUILD_NAME" --platform linux/amd64,linux/arm64 \
-      -t "${IMAGE_NAME}:${VERSION}" -t "${IMAGE_NAME}:${EXTRA_TAG}" --push "${BUILD_DIR}" || exit 2
+    BUILD_ARGS+=(-t "${IMAGE_NAME}:${EXTRA_TAG}")
   fi
+  if [[ "" != "$TARGET" ]]; then
+    echo "# target: $TARGET"
+    BUILD_ARGS+=(--target "$TARGET")
+  fi
+
+  docker buildx build --builder "$BUILD_NAME" --platform linux/amd64,linux/arm64 \
+    "${BUILD_ARGS[@]}" --push "${BUILD_DIR}" || exit 2
 
   echo "#############################################################################################################"
   echo "# done"
