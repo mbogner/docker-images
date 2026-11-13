@@ -101,6 +101,7 @@ RUN apk add --no-cache \
 
 COPY --chmod=755 daemon/send-mail.sh /usr/local/bin/nagios-send-mail
 COPY --chmod=755 daemon/check_node_exporter.pl /usr/local/bin/check_node_exporter
+COPY --chmod=755 daemon/check_mqtt.pl /usr/local/bin/check_mqtt
 COPY --chmod=755 daemon/entrypoint.sh /opt/nagios-entrypoint.sh
 
 USER nagios
