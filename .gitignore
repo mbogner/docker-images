@@ -7,3 +7,4 @@ tmp/
 *.tar.gz
 *.zip
 *.jar
+.DS_Store
