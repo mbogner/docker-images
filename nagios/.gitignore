@@ -1,2 +1,4 @@
 .env
 conf.d/
+docker-compose-prod.yml
+start.sh
