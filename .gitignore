@@ -8,3 +8,8 @@ tmp/
 *.zip
 *.jar
 .DS_Store
+
+# corretto/build_corretto.sh state + logs
+.last-upload
+.last-upload.tmp
+.build.log

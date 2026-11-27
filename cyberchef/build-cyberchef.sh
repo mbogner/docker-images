@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-cd "${DIR}" || exit 98
-source ../_shared.sh || exit 99
-
-# version see Dockerfile
-docker pull alpine:3
-docker pull nginx:alpine
-build "cyberchef" "$PWD" "mbopm/cyberchef" "11.5.0" "latest" || exit 1
