@@ -1,0 +1,101 @@
+#!/usr/bin/env perl
+# nagios plugin reporting the result of the last finished gitlab pipeline of a branch
+#
+# usage: check_gitlab_pipeline -H <gitlab host> -P <project path or id> [-b <branch> | -a] [-t <timeout>]
+#
+# the access token (scope read_api) is read from the environment variable GITLAB_PERSONAL_ACCESS_TOKEN,
+# so it does not show up in the process list or the nagios web interface.
+# without a token only public projects can be read.
+#
+# pending and running pipelines are ignored, as are canceled and skipped ones: they say nothing about
+# the state of the code. the newest pipeline that succeeded, failed or waits for a manual job decides:
+#   success  OK
+#   manual   OK, all jobs before the manual one passed (e.g. terraform plan before a manual apply)
+#   failed   CRITICAL, with the names of the failed jobs (jobs allowed to fail are not listed)
+# without -b the default branch of the project is used.
+# -a looks at the pipelines of all branches, tags and merge requests, for projects that never build their default branch
+use strict;
+use warnings;
+use Getopt::Long qw(:config no_ignore_case bundling);
+use HTTP::Tiny;
+use JSON::PP qw(decode_json);
+
+my %STATE = (OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3);
+
+my ($host, $project, $branch, $all);
+my $timeout = 10;
+GetOptions(
+    'H=s' => \$host, 'P=s' => \$project, 'b=s' => \$branch, 'a' => \$all, 't=i' => \$timeout,
+) or finish('UNKNOWN', 'invalid arguments');
+finish('UNKNOWN', 'usage: check_gitlab_pipeline -H <gitlab host> -P <project path or id> [-b branch | -a] [-t timeout]')
+    unless $host && $project;
+finish('UNKNOWN', '-b and -a exclude each other') if defined $branch && $all;
+
+my $token = $ENV{GITLAB_PERSONAL_ACCESS_TOKEN};
+my $http = HTTP::Tiny->new(
+    timeout => $timeout,
+    verify_SSL => 1,
+    default_headers => $token ? { 'PRIVATE-TOKEN' => $token } : {},
+);
+my $api = "https://$host/api/v4/projects/" . escape($project);
+
+$branch //= $all ? undef : get($api)->{default_branch}
+    // finish('UNKNOWN', "project $project has no default branch, pass one with -b");
+
+# newest first, all states: scope=finished would leave out pipelines waiting for a manual job
+my %RESULTS = map { $_ => 1 } qw(success failed manual);
+my $ref = $all ? '' : 'ref=' . escape($branch) . '&';
+my $pipelines = get("$api/pipelines?${ref}order_by=id&sort=desc&per_page=10");
+my ($pipeline) = grep { $RESULTS{ $_->{status} } } @$pipelines;
+finish('UNKNOWN', sprintf 'no succeeded, failed or manual pipeline on %s of %s', $branch // 'any branch', $project) unless $pipeline;
+
+my $text = sprintf '%s %s: pipeline #%d %s, finished %s (%s) %s',
+    $project, $pipeline->{ref}, $pipeline->{id}, $pipeline->{status},
+    timestamp($pipeline->{finished_at} // $pipeline->{updated_at}),
+    substr($pipeline->{sha}, 0, 8), $pipeline->{web_url};
+finish('OK', $text) if $pipeline->{status} eq 'success';
+
+if ($pipeline->{status} eq 'manual') {
+    my $jobs = get("$api/pipelines/$pipeline->{id}/jobs?scope[]=manual&per_page=100");
+    my @manual = map { $_->{name} } @$jobs;
+    $text .= ', waiting for: ' . join(', ', @manual) if @manual;
+    finish('OK', $text);
+}
+
+my $jobs = get("$api/pipelines/$pipeline->{id}/jobs?scope[]=failed&per_page=100");
+my @failed = map { $_->{name} } grep { !$_->{allow_failure} } @$jobs;
+$text .= ', failed jobs: ' . join(', ', @failed) if @failed;
+finish('CRITICAL', $text);
+
+sub get {
+    my ($url) = @_;
+    my $response = $http->get($url);
+    unless ($response->{success}) {
+        # status 599 is an error of HTTP::Tiny itself (connection, tls, timeout), the reason is in the content
+        my $reason = $response->{status} == 599 ? $response->{content} : "$response->{status} $response->{reason}";
+        $reason =~ s/\s+$//;
+        my $hint = $response->{status} =~ /^(401|403|404)$/ ? ' (check project and GITLAB_PERSONAL_ACCESS_TOKEN)' : '';
+        finish('UNKNOWN', "request to $host failed: $reason$hint");
+    }
+    my $data = eval { decode_json($response->{content}) };
+    finish('UNKNOWN', "invalid json from $url") unless $data;
+    return $data;
+}
+
+# 2026-11-26T12:42:04.520Z => 2026-11-26 12:42 UTC
+sub timestamp {
+    my ($value) = @_;
+    return $value =~ /^(\d{4}-\d\d-\d\d)T(\d\d:\d\d)/ ? "$1 $2 UTC" : ($value // 'unknown');
+}
+
+sub escape {
+    my ($value) = @_;
+    $value =~ s/([^A-Za-z0-9\-._~])/sprintf '%%%02X', ord $1/ge;
+    return $value;
+}
+
+sub finish {
+    my ($state, $text, $perfdata) = @_;
+    print "$state - $text" . ($perfdata ? " | $perfdata" : '') . "\n";
+    exit $STATE{$state};
+}

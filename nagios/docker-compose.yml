@@ -23,6 +23,10 @@ services:
 
   nagios:
     image: mbopm/nagios:latest
+    # secrets for check plugins, e.g. GITLAB_PERSONAL_ACCESS_TOKEN (scope read_api) for check_gitlab_pipeline
+    env_file:
+      - path: ./conf.d/.env
+        required: false
     environment:
       # timezone for logs, notification dates and timeperiods (e.g. workhours)
       TZ: Europe/Vienna
